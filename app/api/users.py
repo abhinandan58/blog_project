@@ -15,6 +15,7 @@ def create_user(user:UserSchema):
         save_user = User(**user_info)
         db.add(save_user)
         db.commit()
+        print("establish")
         return JSONResponse(content={"message":"","data":[]},status_code=201)
     except Exception as e:
         print(e ,"##########")
