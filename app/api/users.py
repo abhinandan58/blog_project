@@ -3,6 +3,7 @@ from app.schemas.user_schemas import UserSchema
 from fastapi.responses import JSONResponse
 from app.models.users import User
 from app.database_connection.connection import db
+from app.helper_fuctions.hashing import hashed_password
 
 router = APIRouter(prefix="/api/v1/users",tags=["user API's"])
 
@@ -10,6 +11,7 @@ router = APIRouter(prefix="/api/v1/users",tags=["user API's"])
 def create_user(user:UserSchema):
     try:
         user_info = dict(user)
+        user_info['password'] = hashed_password(user_info['password'])
         save_user = User(**user_info)
         db.add(save_user)
         db.commit()
@@ -22,7 +24,6 @@ def create_user(user:UserSchema):
 def get_user_details():
     try:
         users = db.query(User).all()
-        print(users ,"333333333333333333333")
         all_users = [obj.info() for obj in users]
         return JSONResponse(content={"message":"data fetched","data":all_users},status_code=200)
     except Exception as e:
